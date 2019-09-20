@@ -4,7 +4,7 @@ import shortid from 'shortid';
 import drawMap from './drawMap';
 
 const HeatMap = (props) => {
-  const [id] = useState(shortid.generate());
+  const [id] = useState(`heatmap-${shortid.generate()}`);
   
   const handleDrawMap = useCallback(() => {
     drawMap(id);
