@@ -9,7 +9,6 @@ const getRandomInt = (min, max) => {
 
 const drawMap = (id) => {
   if (!document.getElementById(id)) return;
-
   const data = [];
   for (
     let i = moment('2019-01-01');
@@ -18,9 +17,10 @@ const drawMap = (id) => {
   ) {
     data.push({
       value: getRandomInt(0, 100),
-      weekNum: i.week(),
+      weekNum: i.weekYear() === 2019 ? i.week() : i.week() + moment('2019-01-01').weeksInYear(),
       day: i.day(),
-      date: i.format('YYYY-MM-DD')
+      date: i.format('YYYY-MM-DD'),
+      weekYear: i.weekYear()
     });
   }
 
@@ -31,7 +31,7 @@ const drawMap = (id) => {
     right: 15
   };
 
-  const chartWidth = 860 - margin.left - margin.right;
+  const chartWidth = 900 - margin.left - margin.right;
   const chartHeight = 160 - margin.top - margin.bottom;
 
   const svg = d3
@@ -58,9 +58,17 @@ const drawMap = (id) => {
     .enter()
     .append('rect')
     .attr('class', 'block')
+    .attr('x', (d) => (d.weekNum - 1) * 15 + (d.weekNum - 1) * 1 + 7.5)
+    .attr('y', (d) => d.day * 15 + d.day * 1 + 7.5)
+    .attr('fill', (d) => colorScale(0))
+    .attr('width', 0)
+    .attr('height', 0)
+    .transition()
+    .duration(1000)
+    .delay((d, i) => i * 3)
+    .attr('fill', (d) => colorScale(d.value))
     .attr('x', (d) => (d.weekNum - 1) * 15 + (d.weekNum - 1) * 1)
     .attr('y', (d) => d.day * 15 + d.day * 1)
-    .attr('fill', (d) => colorScale(d.value))
     .attr('width', 15)
     .attr('height', 15)
     .attr('rx', 3);
