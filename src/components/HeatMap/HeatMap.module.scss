@@ -1,0 +1,25 @@
+.container {
+  position: relative;
+}
+
+.messageWrapper {
+  border-radius: 4px;
+  width: 125px;
+  height: 34px;
+  background: #ffffff;
+  box-shadow: 0 2px 9px 0 rgba(0, 0, 0, 0.09);
+  position: absolute;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  .circle {
+    border-radius: 50%;
+    height: 11px;
+    width: 11px;
+  }
+  .data {
+    font-size: 12px;
+    color: #7e7e7e;
+    margin-left: 10px;
+  }
+}

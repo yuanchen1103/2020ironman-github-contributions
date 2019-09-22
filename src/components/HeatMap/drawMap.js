@@ -7,7 +7,7 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const drawMap = (id) => {
+const drawMap = (id, styles) => {
   if (!document.getElementById(id)) return;
   const data = [];
   for (
@@ -17,7 +17,10 @@ const drawMap = (id) => {
   ) {
     data.push({
       value: getRandomInt(0, 100),
-      weekNum: i.weekYear() === 2019 ? i.week() : i.week() + moment('2019-01-01').weeksInYear(),
+      weekNum:
+        i.weekYear() === 2019
+          ? i.week()
+          : i.week() + moment('2019-01-01').weeksInYear(),
       day: i.day(),
       date: i.format('YYYY-MM-DD'),
       weekYear: i.weekYear()
@@ -53,6 +56,15 @@ const drawMap = (id) => {
     ])
     .range(['#F3F3F3', '#84B6FD', '#8E87FA']);
 
+  const messageWrapper = d3
+    .select(`#${id}`)
+    .append('div')
+    .attr('class', styles.messageWrapper)
+    .html(
+      `<div class="${styles.circle}"></div><div class="${styles.data}"></div>`
+    )
+    .attr('style', 'display: none;');
+
   g.selectAll('.block')
     .data(data)
     .enter()
@@ -63,6 +75,31 @@ const drawMap = (id) => {
     .attr('fill', (d) => colorScale(0))
     .attr('width', 0)
     .attr('height', 0)
+    .on('mouseover', function(d) {
+      d3.select(this)
+        .attr('stroke', d3.rgb(colorScale(d.value)).darker(0.5))
+        .attr('stroke-width', 2);
+
+      d3.select(`.${styles.messageWrapper} .${styles.data}`).html(
+        `${d.date} : ${d.value}`
+      );
+      d3.select(`.${styles.messageWrapper} .${styles.circle}`).attr(
+        'style',
+        `background-color: ${colorScale(d.value)}`
+      );
+
+      messageWrapper.attr(
+        'style',
+        () =>
+          `display: flex; left: ${(d.weekNum - 1) * 15 +
+            (d.weekNum - 1) * 1 +
+            50}px; top: ${d.day * 15 + d.day * 1}px`
+      );
+    })
+    .on('mouseleave', function() {
+      d3.select(this).attr('stroke-width', '0');
+      messageWrapper.attr('style', () => 'display: none;');
+    })
     .transition()
     .duration(1000)
     .delay((d, i) => i * 3)
@@ -75,8 +112,7 @@ const drawMap = (id) => {
 
   const days = [0, 1, 2, 3, 4, 5, 6];
 
-  g
-    .selectAll('.day-label')
+  g.selectAll('.day-label')
     .data(days)
     .enter()
     .append('text')
@@ -92,18 +128,14 @@ const drawMap = (id) => {
     .attr('x', -20)
     .attr('y', (d, i) => i * 15 + i * 1 + 9);
 
-  const monthFirstDays = data.filter(e => e.date.substring(8, 10) === '01');
+  const monthFirstDays = data.filter((e) => e.date.substring(8, 10) === '01');
 
-  g
-    .selectAll('.month-label')
+  g.selectAll('.month-label')
     .data(monthFirstDays)
     .enter()
     .append('text')
     .attr('class', 'month-label')
-    .text((d) =>
-      moment(d.date)
-        .format('M')
-    )
+    .text((d) => moment(d.date).format('M'))
     .attr('font-size', 8)
     .attr('fill', '#B8B8B8')
     .attr('text-anchor', 'middle')
