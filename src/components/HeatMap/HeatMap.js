@@ -4,16 +4,16 @@ import shortid from 'shortid';
 import drawMap from './drawMap';
 import styles from './HeatMap.module.scss';
 
-const HeatMap = (props) => {
+const HeatMap = ({chartData}) => {
   const [id] = useState(`heatmap-${shortid.generate()}`);
   
   const handleDrawMap = useCallback(() => {
-    drawMap(id, styles);
-  }, [id]);
+    drawMap(id, styles, chartData);
+  }, [id, chartData]);
 
   useEffect(() => {
     handleDrawMap()
-  }, [handleDrawMap]);
+  }, []);
 
   return <div id={id} className={styles.container}></div>;
 };

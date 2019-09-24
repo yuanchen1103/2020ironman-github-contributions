@@ -3,11 +3,11 @@ import HeatMap from '../HeatMap/HeatMap';
 
 import styles from './HeatMapWidget.module.scss';
 
-const HeatMapWidget = () => {
+const HeatMapWidget = ({title, chartData}) => {
   return (
     <div className={styles.wrapper}>
-      <span>2019 103 contributions</span>
-      <HeatMap />
+      <span>{title}</span>
+      <HeatMap chartData={chartData}/>
     </div>
   );
 };

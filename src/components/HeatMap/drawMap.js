@@ -1,31 +1,32 @@
 import * as d3 from 'd3';
+import sortBy from 'lodash/sortBy';
 import moment from 'moment';
 
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+// const getRandomInt = (min, max) => {
+//   min = Math.ceil(min);
+//   max = Math.floor(max);
+//   return Math.floor(Math.random() * (max - min + 1)) + min;
+// };
 
-const drawMap = (id, styles) => {
+const drawMap = (id, styles, chartData) => {
   if (!document.getElementById(id)) return;
-  const data = [];
-  for (
-    let i = moment('2019-01-01');
-    i.isBefore('2020-01-01');
-    i.add(1, 'days')
-  ) {
-    data.push({
-      value: getRandomInt(0, 100),
-      weekNum:
-        i.weekYear() === 2019
-          ? i.week()
-          : i.week() + moment('2019-01-01').weeksInYear(),
-      day: i.day(),
-      date: i.format('YYYY-MM-DD'),
-      weekYear: i.weekYear()
-    });
-  }
+  const data = sortBy(chartData, ['date']);
+  // for (
+  //   let i = moment('2019-01-01');
+  //   i.isBefore('2020-01-01');
+  //   i.add(1, 'days')
+  // ) {
+  //   data.push({
+  //     value: getRandomInt(0, 100),
+  //     weekNum:
+  //       i.weekYear() === 2019
+  //         ? i.week()
+  //         : i.week() + moment('2019-01-01').weeksInYear(),
+  //     day: i.day(),
+  //     date: i.format('YYYY-MM-DD'),
+  //     weekYear: i.weekYear()
+  //   });
+  // }
 
   const margin = {
     top: 15,
@@ -80,10 +81,10 @@ const drawMap = (id, styles) => {
         .attr('stroke', d3.rgb(colorScale(d.value)).darker(0.5))
         .attr('stroke-width', 2);
 
-      d3.select(`.${styles.messageWrapper} .${styles.data}`).html(
+      d3.select(`#${id} .${styles.messageWrapper} .${styles.data}`).html(
         `${d.date} : ${d.value}`
       );
-      d3.select(`.${styles.messageWrapper} .${styles.circle}`).attr(
+      d3.select(`#${id} .${styles.messageWrapper} .${styles.circle}`).attr(
         'style',
         `background-color: ${colorScale(d.value)}`
       );
