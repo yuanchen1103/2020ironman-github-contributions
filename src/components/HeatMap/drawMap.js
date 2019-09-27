@@ -2,32 +2,20 @@ import * as d3 from 'd3';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
 
-// const getRandomInt = (min, max) => {
-//   min = Math.ceil(min);
-//   max = Math.floor(max);
-//   return Math.floor(Math.random() * (max - min + 1)) + min;
-// };
+const generateDomain = (colorLength, max) => {
+  const result = [];
+  const first = 0;
+  const tolerance = max / (colorLength - 1);
+  for (let i = 0; i < colorLength; i += 1) {
+    result.push(first + i * tolerance);
+  }
+  return result;
+}
 
-const drawMap = (id, styles, chartData) => {
+const drawMap = (id, styles, chartData, colors) => {
+  console.log(id);
   if (!document.getElementById(id)) return;
   const data = sortBy(chartData, ['date']);
-  // for (
-  //   let i = moment('2019-01-01');
-  //   i.isBefore('2020-01-01');
-  //   i.add(1, 'days')
-  // ) {
-  //   data.push({
-  //     value: getRandomInt(0, 100),
-  //     weekNum:
-  //       i.weekYear() === 2019
-  //         ? i.week()
-  //         : i.week() + moment('2019-01-01').weeksInYear(),
-  //     day: i.day(),
-  //     date: i.format('YYYY-MM-DD'),
-  //     weekYear: i.weekYear()
-  //   });
-  // }
-
   const margin = {
     top: 15,
     bottom: 15,
@@ -50,12 +38,8 @@ const drawMap = (id, styles, chartData) => {
 
   const colorScale = d3
     .scaleLinear()
-    .domain([
-      0,
-      d3.max(data.map((e) => e.value)) / 2,
-      d3.max(data.map((e) => e.value))
-    ])
-    .range(['#F3F3F3', '#84B6FD', '#8E87FA']);
+    .domain(generateDomain(colors.length, d3.max(data.map(e => e.value))))
+    .range(colors);
 
   const messageWrapper = d3
     .select(`#${id}`)

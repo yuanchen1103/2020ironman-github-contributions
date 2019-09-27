@@ -3,11 +3,11 @@ import HeatMap from '../HeatMap/HeatMap';
 
 import styles from './HeatMapWidget.module.scss';
 
-const HeatMapWidget = ({title, chartData}) => {
+const HeatMapWidget = ({title, chartData, isModalOpen, colors}) => {
   return (
     <div className={styles.wrapper}>
       <span>{title}</span>
-      <HeatMap chartData={chartData}/>
+      <HeatMap chartData={chartData} colors={colors} isModalOpen={isModalOpen}/>
     </div>
   );
 };

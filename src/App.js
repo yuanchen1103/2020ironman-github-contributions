@@ -71,6 +71,7 @@ function App() {
   const getData = useCallback(() => {
     if (!input.length) return;
     setIsLoading(true);
+    setData(null);
     axios
       .get(`https://github-contributions-api.now.sh/v1/${input}`)
       .then((res) => {
@@ -95,10 +96,12 @@ function App() {
             title={`${year} ${!!data.years.find((e) => e.year === year) &&
               data.years.find((e) => e.year === year).total} contributions`}
             chartData={groupData[year]}
+            isModalOpen={isModalOpen}
+            colors={colors.map((item) => item.color)}
           />
         </div>
       ));
-  }, [data]);
+  }, [data, colors, isModalOpen]);
 
   const renderLoading = useCallback(
     () => (
@@ -206,11 +209,13 @@ function App() {
                       style={{ backgroundColor: item.color }}
                       onClick={() => toggleColorPicker(i)}
                     ></div>
-                    <img
-                      src={deleteIcon}
-                      alt=""
-                      onClick={() => deleteColor(i)}
-                    />
+                    {colors.length >= 3 && (
+                      <img
+                        src={deleteIcon}
+                        alt=""
+                        onClick={() => deleteColor(i)}
+                      />
+                    )}
                   </div>
                 ))}
                 {colors.length < 5 && (
