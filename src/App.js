@@ -2,6 +2,11 @@ import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { SketchPicker } from 'react-color';
+import moment from 'moment';
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import OutsideClickHandler from 'react-outside-click-handler';
 import './App.scss';
 
 import { groupDataByYear } from './computeData';
@@ -32,6 +37,21 @@ function App() {
       showPicker: false
     }
   ]);
+  const [pickerDate, setPickerDate] = useState({
+    startDate: moment()
+      .subtract(1, 'years')
+      .startOf('day')
+      .valueOf(),
+    endDate: moment()
+      .startOf('day')
+      .valueOf(),
+    key: 'selection',
+    color: '#82BBFD'
+  });
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [isAll, setIsAll] = useState(true);
 
   const addColor = useCallback(() => {
     setColors([
@@ -192,17 +212,74 @@ function App() {
         <table style={{ marginTop: 48 }}>
           <tbody>
             <tr>
+              <td className="label">Date Range</td>
+              <td style={{ position: 'relative' }}>
+                <input
+                  type="checkbox"
+                  id="check-all"
+                  checked={isAll}
+                  onChange={() => setIsAll(!isAll)}
+                />{' '}
+                <label className="check-label" htmlFor="check-all">
+                  All Contributions
+                </label>
+                <input
+                  type="text"
+                  className="date-input"
+                  readOnly
+                  value={`${moment(pickerDate.startDate).format(
+                    'YYYY/MM/DD'
+                  )} - ${moment(pickerDate.endDate).format('YYYY/MM/DD')}`}
+                  disabled={isAll}
+                  onFocus={() => setShowDatePicker(true)}
+                  id="date-range-input"
+                />
+                {showDatePicker && (
+                  <OutsideClickHandler
+                    onOutsideClick={(e) => {
+                      if (e.target.id !== 'date-range-input') {
+                        setShowDatePicker(false);
+                      }
+                    }}
+                  >
+                    <DateRange
+                      ranges={[pickerDate]}
+                      className="date-picker"
+                      showDateDisplay={false}
+                      onChange={(obj) => {
+                        setPickerDate({
+                          ...obj.selection
+                        });
+                      }}
+                      onRangeFocusChange={(arr) => {
+                        const isEndClick = arr[1] === 0;
+                        if (isEndClick) {
+                          setShowDatePicker(false);
+                        }
+                      }}
+                    />
+                  </OutsideClickHandler>
+                )}
+              </td>
+            </tr>
+            <tr>
               <td className="label">Color</td>
               <td>
                 {colors.map((item, i) => (
                   <div className="color-group" key={i}>
                     {item.showPicker && (
-                      <div className="color-picker">
-                        <SketchPicker
-                          color={item.color}
-                          onChangeComplete={(color) => updateColor(i, color)}
-                        />
-                      </div>
+                      <OutsideClickHandler
+                        onOutsideClick={() => {
+                          toggleColorPicker(i);
+                        }}
+                      >
+                        <div className="color-picker">
+                          <SketchPicker
+                            color={item.color}
+                            onChangeComplete={(color) => updateColor(i, color)}
+                          />
+                        </div>
+                      </OutsideClickHandler>
                     )}
                     <div
                       className="color-block"
