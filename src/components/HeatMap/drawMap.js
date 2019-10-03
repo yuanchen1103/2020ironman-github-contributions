@@ -10,7 +10,7 @@ const generateDomain = (colorLength, max) => {
     result.push(first + i * tolerance);
   }
   return result;
-}
+};
 
 const drawMap = (id, styles, chartData, colors) => {
   if (!document.getElementById(id)) return;
@@ -37,7 +37,7 @@ const drawMap = (id, styles, chartData, colors) => {
 
   const colorScale = d3
     .scaleLinear()
-    .domain(generateDomain(colors.length, d3.max(data.map(e => e.value))))
+    .domain(generateDomain(colors.length, d3.max(data.map((e) => e.value))))
     .range(colors);
 
   const messageWrapper = d3

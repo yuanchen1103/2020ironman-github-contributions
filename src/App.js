@@ -106,22 +106,38 @@ function App() {
   }, [input]);
 
   const renderHeatMap = useCallback(() => {
-    const groupData = groupDataByYear(data);
+    if (isAll) {
+      const groupData = groupDataByYear(data);
+      return Object.keys(groupData)
+        .sort()
+        .reverse()
+        .map((year) => (
+          <div className="heatmap-wrapper" key={year}>
+            <HeatMapWidget
+              title={`${year} ${!!data.years.find((e) => e.year === year) &&
+                data.years.find((e) => e.year === year).total} contributions`}
+              chartData={groupData[year]}
+              isModalOpen={isModalOpen}
+              colors={colors.map((item) => item.color)}
+            />
+          </div>
+        ));
+    }
+    const groupData = groupDataByCustom(pickerDate, data);
     return Object.keys(groupData)
       .sort()
       .reverse()
-      .map((year) => (
-        <div className="heatmap-wrapper" key={year}>
+      .map((range) => (
+        <div className="heatmap-wrapper" key={range}>
           <HeatMapWidget
-            title={`${year} ${!!data.years.find((e) => e.year === year) &&
-              data.years.find((e) => e.year === year).total} contributions`}
-            chartData={groupData[year]}
+            title={`${range}`}
+            chartData={groupData[range]}
             isModalOpen={isModalOpen}
             colors={colors.map((item) => item.color)}
           />
         </div>
       ));
-  }, [data, colors, isModalOpen]);
+  }, [data, colors, isModalOpen, isAll, pickerDate]);
 
   const renderLoading = useCallback(
     () => (

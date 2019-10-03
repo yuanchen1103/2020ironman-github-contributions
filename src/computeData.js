@@ -22,6 +22,7 @@ export const groupDataByYear = (data) => {
       weekYear: momentObj.weekYear()
     });
   }
+  console.log(result);
   return result;
 };
 
@@ -37,7 +38,7 @@ export const groupDataByCustom = (dateRange, data) => {
   for (let i = moment(startDate); i.isSameOrBefore(endDate); i.add(1, 'days')) {
     tmp.push({
       value: dateKeysData[i.format('YYYY-MM-DD')] || 0,
-      weekNum:
+      oldWeekNum:
         i.weekYear() === Number(i.format('YYYY'))
           ? i.week()
           : i.week() + moment(`${i.format('YYYY')}-01-01`).weeksInYear(),
@@ -47,12 +48,26 @@ export const groupDataByCustom = (dateRange, data) => {
     });
   }
   const dataGroupBy365Days = chunk(tmp.reverse(), 365);
+  for (let i = 0; i < dataGroupBy365Days.length; i+=1) {
+    dataGroupBy365Days[i] = dataGroupBy365Days[i].reverse();
+    let currentWeekNum;
+    let newWeekNum = 0;
+    for (let j = 0; j < dataGroupBy365Days[i].length; j+=1) {
+      if (dataGroupBy365Days[i][j].oldWeekNum === currentWeekNum) {
+        dataGroupBy365Days[i][j].weekNum = newWeekNum;
+      } else {
+        newWeekNum += 1
+        currentWeekNum = dataGroupBy365Days[i][j].oldWeekNum;
+        dataGroupBy365Days[i][j].weekNum = newWeekNum;
+      }
+
+    }
+  }
+
   const result = {};
   for (let i = 0; i < dataGroupBy365Days.length; i += 1) {
     const el = dataGroupBy365Days[i];
-    result[
-      `${el[el.length - 1].date} ~ ${el[0].date}`
-    ] = dataGroupBy365Days[i];
+    result[`${el[0].date} ~ ${el[el.length - 1].date}`] = dataGroupBy365Days[i];
   }
   return result;
 };
