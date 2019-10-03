@@ -13,7 +13,6 @@ const generateDomain = (colorLength, max) => {
 }
 
 const drawMap = (id, styles, chartData, colors) => {
-  console.log(id);
   if (!document.getElementById(id)) return;
   const data = sortBy(chartData, ['date']);
   const margin = {

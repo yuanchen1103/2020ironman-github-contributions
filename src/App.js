@@ -9,7 +9,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import OutsideClickHandler from 'react-outside-click-handler';
 import './App.scss';
 
-import { groupDataByYear } from './computeData';
+import { groupDataByYear, groupDataByCustom } from './computeData';
 
 import HeatMapWidget from './components/HeatMapWidget/HeatMapWidget';
 
